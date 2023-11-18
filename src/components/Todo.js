@@ -15,9 +15,8 @@ export const Todo = ({task, deleteTodo, editTodo, toggleComplete}) => {
 
   const handleDeleteConfirmed = () => {
     deleteTodo(todoIdToDelete);
-    setShowConfirmation(false);
   };
-
+  
   const handleCancelDelete = () => {
     setShowConfirmation(false);
   };
@@ -32,20 +31,20 @@ export const Todo = ({task, deleteTodo, editTodo, toggleComplete}) => {
         </div>
         {showConfirmation && (
         <div className="modal"
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          backgroundColor: 'green',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-          zIndex: 1000,
-          textAlign: 'center',
-        }}
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'green',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            zIndex: 1000,
+            textAlign: 'center',
+          }}
         >
-          <p>Are you sure you want to delete this todo?</p>
+          <p>Are you sure you want to perform this action?</p>
           <button 
             style={{
             backgroundColor: '#e74c3c',
