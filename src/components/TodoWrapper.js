@@ -126,7 +126,7 @@ export const TodoWrapper = () => {
 
   return (
     <div className="TodoWrapper">
-      <h1>Get Things Done !</h1>
+      <h1>To Do App</h1>
       <TodoForm addTodo={addTodo} />
       {/* display todos */}
       {filteredTodos.map((todo) =>
@@ -199,7 +199,7 @@ export const TodoWrapper = () => {
             boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
           }}
         >
-          Element deleted successfully!
+          Action completed successfully!
         </div>
       )}
       <button

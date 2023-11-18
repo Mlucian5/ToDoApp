@@ -8,7 +8,9 @@
 }
 
 body {
-  background: #8758ff;
+  background-image: url('./resources/zoom-music-background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
