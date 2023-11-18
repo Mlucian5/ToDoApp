@@ -21,10 +21,14 @@ export const Todo = ({task, deleteTodo, editTodo, toggleComplete}) => {
     setShowConfirmation(false);
   };
 
+  const handleToggleComplete = () => {
+    toggleComplete(task.id);
+  };
+
 
   return (
     <div className="Todo">
-        <p className={`${task.completed ? "completed" : "incompleted"}`} onClick={() => toggleComplete(task.id)}>{task.task}</p>
+        <p className={`${task.completed ? "completed" : "incompleted"}`} onClick={handleToggleComplete}>{task.task}</p>
         <div>
         <FontAwesomeIcon className="edit-icon" icon={faPenToSquare} onClick={() => editTodo(task.id)} />
         <FontAwesomeIcon className="delete-icon" icon={faTrash} onClick={() => handleDeleteClick(task.id)} />

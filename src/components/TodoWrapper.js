@@ -8,6 +8,19 @@ export const TodoWrapper = () => {
   const [todos, setTodos] = useState([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarTimeout, setSnackbarTimeout] = useState(null);
+  const [showDone, setShowDone] = useState(false);
+  const [showNotDone, setShowNotDone] = useState(false);
+
+  const filteredTodos = todos.filter(todo => {
+    if (showDone && showNotDone) {
+      return true; // Show all todos
+    } else if (showDone) {
+      return todo.completed;
+    } else if (showNotDone) {
+      return !todo.completed;
+    }
+    return true;
+  });
 
   const addTodo = (todo) => {
     setTodos([
@@ -56,6 +69,16 @@ export const TodoWrapper = () => {
     );
   };
 
+  const handleToggleShowDone = () => {
+    setShowDone(!showDone);
+    setShowNotDone(false);
+  };
+  
+  const handleToggleShowNotDone = () => {
+    setShowNotDone(!showNotDone);
+    setShowDone(false);
+  };
+
     // Clear the Snackbar timeout if the component unmounts
     useEffect(() => {
       return () => {
@@ -68,7 +91,7 @@ export const TodoWrapper = () => {
       <h1>Get Things Done !</h1>
       <TodoForm addTodo={addTodo} />
       {/* display todos */}
-      {todos.map((todo) =>
+      {filteredTodos.map((todo) =>
         todo.isEditing ? (
           <EditTodoForm editTodo={editTask} task={todo} />
         ) : (
@@ -97,7 +120,33 @@ export const TodoWrapper = () => {
           >
             Element deleted successfully!
           </div>
-       )} 
+       )}
+       <button
+        style={{
+          backgroundColor: '#e74c3c',
+          color: '#fff',
+          padding: '6px 13px',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          marginRight: '10px',
+          border: 'none',
+        }} 
+        onClick={handleToggleShowDone}>
+        {showDone ? 'Show All' : 'Show Done Only'}
+      </button>
+      <button
+        style={{
+          backgroundColor: '#e74c3c',
+          color: '#fff',
+          padding: '6px 13px',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          marginRight: '10px',
+          border: 'none',
+        }}
+        onClick={handleToggleShowNotDone}>
+        {showNotDone ? 'Show All' : 'Show Not Done Only'}
+      </button> 
     </div>
   );
 };
