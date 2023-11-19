@@ -13,6 +13,12 @@ export const TodoWrapper = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [todoIdToDelete, setTodoIdToDelete] = useState(null);
   const [isBulkDeletion, setBulkDeletion] = useState(false);
+  const [isUpdateTask, setIsUpdateTask] = useState(false);
+  const [toDoObjState, setToDoObjState] = useState(null);
+  const [originalToDoObjState, setOriginalToDoObjState] = useState(null);
+
+  var toDoObj = { id: null, task: null, completed: false, isEditing: false }
+  var originalToDoObj = { id: null, task: null, completed: false, isEditing: false }
 
   const filteredTodos = todos.filter(todo => {
     if (showDone && showNotDone) {
@@ -30,6 +36,14 @@ export const TodoWrapper = () => {
       ...todos,
       { id: uuidv4(), task: todo, completed: false, isEditing: false },
     ]);
+  }
+
+  const editTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
+      )
+    );
   }
 
   const deleteTodo = (id) => {
@@ -65,24 +79,11 @@ export const TodoWrapper = () => {
     );
   }
 
-  const editTodo = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
-      )
-    );
-  }
-
-  const editTask = (task, id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, task, isEditing: !todo.isEditing } : todo
-      )
-    );
-  };
-
   const handleToggleShowDone = () => {
+    //sets the showDone state to true in order to see onlly the done tasks
     setShowDone(!showDone);
+
+    //sets the showNotDone state to false in order to hide the to do tasks
     setShowNotDone(false);
   };
 
@@ -98,7 +99,6 @@ export const TodoWrapper = () => {
   };
 
   const handleDeleteConfirmed = () => {
-    console.log('isBulkDeletion', isBulkDeletion);
     if (isBulkDeletion) {
       deleteToDoBulk();
     } else {
@@ -116,11 +116,67 @@ export const TodoWrapper = () => {
     setShowConfirmation(true);
   };
 
-  // Clear the Snackbar timeout if the component unmounts
+  const editTask = (task, id) => {
+    toDoObj.task = task;
+    toDoObj.id = id;
+    setToDoObjState(toDoObj);
+    setShowConfirmation(true);
+    setIsUpdateTask(true);
+  };
+
+  const handleEditClick = (id, task) => {
+    originalToDoObj.id = id;
+    originalToDoObj.task = task.task;
+    setOriginalToDoObjState(originalToDoObj);
+    setTodos(
+      todos.map((todo) =>
+        todo.id === originalToDoObj.id ? { ...todo, isEditing: !todo.isEditing } : todo
+      )
+    );
+  };
+
+  const handleUpdateConfirmed = () => {
+    setShowConfirmation(false);
+    notifyDeletionSucess();
+    setTodos(
+      todos.map((todo) =>
+        todo.id === toDoObjState.id ? { ...todo, task: toDoObjState.task, isEditing: !todo.isEditing } : todo
+      )
+    );
+  };
+
+  const handleCancelUpdate = () => {
+    setShowConfirmation(false);
+    setTodos(
+      todos.map((todo) =>
+        todo.id === originalToDoObjState.id ? { ...todo, task: originalToDoObjState.task, isEditing: !todo.isEditing } : todo
+      )
+    );
+  };
+
+  const handleApproveAction = () => {
+    if (isUpdateTask) {
+      handleUpdateConfirmed();
+    } else {
+      handleDeleteConfirmed()
+    }
+  }
+
+  const handleCancelAction = () => {
+    if (isUpdateTask) {
+      handleCancelUpdate();
+    } else {
+      handleCancelDelete()
+    }
+  }
+
+  // Reset states
   useEffect(() => {
     return () => {
       clearTimeout(snackbarTimeout);
       setBulkDeletion(false);
+      setIsUpdateTask(false);
+      setToDoObjState(null);
     };
   }, [snackbarTimeout]);
 
@@ -131,7 +187,9 @@ export const TodoWrapper = () => {
       {/* display todos */}
       {filteredTodos.map((todo) =>
         todo.isEditing ? (
-          <EditTodoForm editTodo={editTask} task={todo} />
+          <EditTodoForm
+            editTodo={editTask}
+            task={todo} />
         ) : (
           <Todo
             key={todo.id}
@@ -139,6 +197,7 @@ export const TodoWrapper = () => {
             editTodo={editTodo}
             toggleComplete={toggleComplete}
             handleDeleteClick={handleDeleteClick}
+            handleEditClick={handleEditClick}
           />
         )
       )}
@@ -169,7 +228,7 @@ export const TodoWrapper = () => {
               marginRight: '10px',
               border: 'none',
             }}
-            onClick={handleDeleteConfirmed}>Yes</button>
+            onClick={() => handleApproveAction()}>Yes</button>
           <button
             style={{
               backgroundColor: '#e74c3c',
@@ -180,10 +239,9 @@ export const TodoWrapper = () => {
               marginRight: '10px',
               border: 'none',
             }}
-            onClick={handleCancelDelete}>No</button>
+            onClick={() => handleCancelAction()}>No</button>
         </div>
       )}
-
 
       {showSnackbar && (
         <div className="snackbar"
@@ -213,7 +271,7 @@ export const TodoWrapper = () => {
           border: 'none',
         }}
         onClick={handleToggleShowDone}>
-        {showDone ? 'Show All' : 'Show Done Only'}
+        {showDone ? 'Show All' : 'Completed tasks'}
       </button>
       <button
         style={{
@@ -226,7 +284,7 @@ export const TodoWrapper = () => {
           border: 'none',
         }}
         onClick={handleToggleShowNotDone}>
-        {showNotDone ? 'Show All' : 'Show Not Done Only'}
+        {showNotDone ? 'Show All' : 'To do tasks'}
       </button>
 
       <button
