@@ -32,10 +32,9 @@ export const TodoWrapper = () => {
   });
 
   const addTodo = (todo) => {
-    setTodos([
-      ...todos,
-      { id: uuidv4(), task: todo, completed: false, isEditing: false },
-    ]);
+    const newTodos = [...todos, { id: uuidv4(), task: todo, completed: false, isEditing: false }];
+    setTodos(newTodos);
+    localStorage.setItem('todos', JSON.stringify(newTodos));
   }
 
   const editTodo = (id) => {
@@ -47,12 +46,16 @@ export const TodoWrapper = () => {
   }
 
   const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    const newToDos = todos.filter((todo) => todo.id !== id);
+    setTodos(newToDos);
+    localStorage.setItem('todos', JSON.stringify(newToDos));
     notifyDeletionSucess();
   };
 
   const deleteToDoBulk = () => {
-    setTodos(todos.filter((todo) => !todo.completed));
+    const newToDos = todos.filter((todo) => !todo.completed);
+    setTodos(newToDos);
+    localStorage.setItem('todos', JSON.stringify(newToDos));
     notifyDeletionSucess();
   }
 
@@ -138,11 +141,11 @@ export const TodoWrapper = () => {
   const handleUpdateConfirmed = () => {
     setShowConfirmation(false);
     notifyDeletionSucess();
-    setTodos(
-      todos.map((todo) =>
-        todo.id === toDoObjState.id ? { ...todo, task: toDoObjState.task, isEditing: !todo.isEditing } : todo
-      )
-    );
+    const newToDos = todos.map((todo) =>
+      todo.id === toDoObjState.id ? { ...todo, task: toDoObjState.task, isEditing: !todo.isEditing } : todo
+    )
+    setTodos(newToDos);
+    localStorage.setItem('todos', JSON.stringify(newToDos));
   };
 
   const handleCancelUpdate = () => {
@@ -177,6 +180,8 @@ export const TodoWrapper = () => {
       setBulkDeletion(false);
       setIsUpdateTask(false);
       setToDoObjState(null);
+      const savedTodos = JSON.parse(localStorage.getItem('todos')) || [];
+      setTodos(savedTodos);
     };
   }, [snackbarTimeout]);
 
